@@ -58,7 +58,7 @@ export class GridHelperService {
     };
   }
 
-  public getDefaultColumnDefinition(_isServerSideRowModel: boolean = false): ColDef {
+  public getDefaultColumnDefinition(): ColDef {
     const loadingStateByEntry: Map<unknown, boolean> = new Map<unknown, boolean>();
     const updateTableState: (params: CellClassParams) => void = (params: CellClassParams): void => {
       loadingStateByEntry.set(params.value, false);
