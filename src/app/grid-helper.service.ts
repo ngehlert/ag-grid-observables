@@ -12,15 +12,7 @@ export class GridHelperService {
     let skipNextPostSort: boolean = false;
 
     return {
-      stopEditingWhenCellsLoseFocus: true,
-      suppressRowClickSelection: true,
-      singleClickEdit: true,
       pagination: true,
-      enableRangeSelection: true,
-      enableRangeHandle: true,
-      paginationAutoPageSize: false,
-      suppressDragLeaveHidesColumns: true,
-      domLayout: 'normal',
       defaultColDef: this.getDefaultColumnDefinition(),
       postSortRows: (params: PostSortRowsParams): void => {
         console.log('post sort triggered');
@@ -105,7 +97,6 @@ export class GridHelperService {
           return false;
         },
       },
-      floatingFilter: false,
     };
   }
 }

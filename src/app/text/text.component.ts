@@ -5,7 +5,7 @@ import {Observable, of} from 'rxjs';
 
 @Component({
     selector: 'grid-text-renderer',
-    templateUrl: 'text.html',
+    template: '<span>{{value|async}}</span>',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 class AgGridTextCellRendererComponent implements ICellRendererAngularComp {
