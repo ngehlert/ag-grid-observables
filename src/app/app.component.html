@@ -1,8 +1,20 @@
+<h1>Client Side</h1>
 <ag-grid-angular
-  style="width: 600px; height: 600px;"
+  style="width: 600px; height: 400px;"
   class="ag-theme-alpine"
   [columnDefs]="columnDefs"
   [rowData]="rowData"
   [gridOptions]="gridOptions"
 ></ag-grid-angular>
 <!-- router-outlet></router-outlet -->
+
+
+
+<h1>Server Side Row Model</h1>
+<ag-grid-angular
+  #agGrid
+  style="width: 600px; height: 400px;"
+  class="ag-theme-alpine"
+  [columnDefs]="columnDefs"
+  [gridOptions]="serverSideGridOptions"
+></ag-grid-angular>

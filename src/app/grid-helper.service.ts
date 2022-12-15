@@ -23,6 +23,7 @@ export class GridHelperService {
       domLayout: 'normal',
       defaultColDef: this.getDefaultColumnDefinition(),
       postSortRows: (params: PostSortRowsParams): void => {
+        console.log('post sort triggered');
         if (skipNextPostSort) {
           skipNextPostSort = false;
 

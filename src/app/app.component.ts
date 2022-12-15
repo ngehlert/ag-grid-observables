@@ -1,15 +1,25 @@
-import { Component } from '@angular/core';
-import {ColDef, GridOptions} from '@ag-grid-community/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {
+  ColDef,
+  GridApi,
+  GridOptions,
+  IServerSideDatasource,
+  IServerSideGetRowsParams,
+  LoadSuccessParams
+} from '@ag-grid-community/core';
 import {delay, Observable, of, share} from 'rxjs';
 import {getObservableNumberComparator, GridHelperService} from './grid-helper.service';
 import {AgGridTextCellRendererComponent} from './text/text.component';
+import {AgGridAngular} from "@ag-grid-community/angular";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+
+  @ViewChild('agGrid', {static: true}) public agGrid!: AgGridAngular;
   public columnDefs: Array<ColDef<ITableEntry>> = [
     {
       colId: 'car.model',
@@ -29,11 +39,54 @@ export class AppComponent {
   ];
   public rowData: Array<ITableEntry> = [];
   public gridOptions: GridOptions = this.gridHelperService.getDefaultOptions();
+  public serverSideGridOptions: GridOptions = {
+    ...this.gridOptions,
+    rowModelType: 'serverSide',
+  }
 
   constructor(
     private gridHelperService: GridHelperService,
   ) {
-    this.rowData = [
+    this.rowData = this.getRandomRowData();
+  }
+
+  public ngOnInit(): void {
+    this.agGrid.gridReady.subscribe(
+      (params: { api: GridApi }) => {
+        const api: GridApi = params.api;
+        const dataSource: IServerSideDatasource = this.getServerSideDataSource();
+        api.setServerSideDatasource(dataSource);
+      },
+    );
+  }
+
+  private getServerSideDataSource(): IServerSideDatasource {
+    return {
+      getRows: this.getServerSideDataSourceRows.bind(this),
+    };
+  }
+
+  private getServerSideDataSourceRows(params: IServerSideGetRowsParams): void {
+    setTimeout(() => {
+      const rowData: Array<ITableEntry> = this.getRandomRowData();
+      const successParams: LoadSuccessParams = {
+        rowData: rowData,
+        rowCount: rowData.length,
+      };
+      params.success(successParams);
+    }, 3000);
+  }
+
+
+  private getRandomNumberObservable(): Observable<number> {
+    return of(Math.trunc(Math.random() * 10_000)).pipe(
+      delay(5_000),
+      share()
+      );
+  }
+
+  private getRandomRowData(): Array<ITableEntry> {
+    return [
       {
         car: {make: 'Toyota', model: 'Celica'},
         pricingData: this.getRandomNumberObservable()
@@ -55,13 +108,6 @@ export class AppComponent {
         pricingData: this.getRandomNumberObservable()
       },
     ]
-  }
-
-  private getRandomNumberObservable(): Observable<number> {
-    return of(Math.trunc(Math.random() * 10_000)).pipe(
-      delay(5_000),
-      share()
-      );
   }
 }
 
