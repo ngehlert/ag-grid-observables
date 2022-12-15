@@ -1,4 +1,12 @@
-import {CellClassParams, ColDef, ColumnState, GridOptions, PostSortRowsParams, RowNode} from '@ag-grid-community/core';
+import {
+  CellClassParams,
+  ColDef,
+  ColumnState,
+  GridOptions,
+  PostSortRowsParams,
+  ProcessCellForExportParams,
+  RowNode
+} from '@ag-grid-community/core';
 import {Injectable} from '@angular/core';
 import {first, forkJoin, isObservable, Observable} from "rxjs";
 
@@ -14,6 +22,13 @@ export class GridHelperService {
     return {
       pagination: true,
       defaultColDef: this.getDefaultColumnDefinition(),
+      processCellForClipboard: processCellCallback,
+      defaultCsvExportParams: {
+        processCellCallback: processCellCallback,
+      },
+      defaultExcelExportParams: {
+        processCellCallback: processCellCallback,
+      },
       postSortRows: (params: PostSortRowsParams): void => {
         console.log('post sort triggered');
         if (skipNextPostSort) {
@@ -101,16 +116,23 @@ export class GridHelperService {
   }
 }
 
-const valueByObservable: WeakMap<Observable<unknown> | Promise<unknown>, unknown>
-  = new WeakMap<Observable<unknown> | Promise<unknown>, unknown>();
+function processCellCallback(params: ProcessCellForExportParams) {
+  if (isObservable(params.value)) {
+    return getStoredResolvedObservableValue(params.value) || '';
+  }
+
+  return params.value;
+}
+
+const valueByObservable: WeakMap<Observable<unknown>, unknown> = new WeakMap<Observable<unknown>, unknown>();
 export function storeResolvedObservableValue(
-  observable: Observable<unknown> | Promise<unknown>,
+  observable: Observable<unknown>,
   value: unknown,
 ): void {
   valueByObservable.set(observable, value);
 }
 
-export function getStoredResolvedObservableValue(observable: Observable<unknown> | Promise<unknown>): unknown {
+export function getStoredResolvedObservableValue(observable: Observable<unknown>): unknown {
   return valueByObservable.get(observable);
 }
 
